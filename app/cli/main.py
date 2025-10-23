@@ -21,6 +21,7 @@ from typing import List, Tuple
 from config.database import Base, engine
 from domain.models import libro  # ensure models are registered
 from domain.models import venta  # ensure models are registered
+from domain.models import usuario  # ensure models are registered
 from domain.repositories.libros import RepositorioLibros
 from domain.repositories.ventas import RepositorioVentas
 
@@ -62,7 +63,10 @@ def cmd_seed_libros():
 def cmd_listar_libros():
     repo = RepositorioLibros()
     for l in repo.listar_libros():
-        print(l)
+        print(
+            f"[{l.id}] {l.titulo} — {l.autor} | ISBN: {l.isbn or 'N/A'} | "
+            f"stock={l.stock or 0} | precio={l.precio or 0.0}"
+        )
 
 
 def cmd_crear_venta(nombre: str, item_args: List[str]):

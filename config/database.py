@@ -24,6 +24,13 @@ engine = create_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
 Base = declarative_base()
 
 # 5) Configure session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Use expire_on_commit=False so ORM instances keep loaded attributes
+# after the session commits/closes, which is convenient for CLI/app layers.
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+    expire_on_commit=False,
+)
 
 __all__ = ["engine", "Base", "SessionLocal"]

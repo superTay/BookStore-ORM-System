@@ -67,7 +67,19 @@ class Libro(Base):
     def __repr__(self) -> str:
         """Return a concise, developer-friendly textual representation.
 
-        Example
-            <Libro id=1 titulo='1984' autor='George Orwell' isbn='9780451524935' stock=5 precio=12.5>
+        Safe for detached instances: falls back to object identity if attributes
+        are expired or the instance is detached from a Session.
         """
-        return f"<Libro id={self.id} titulo={self.titulo!r} autor={self.autor!r} isbn={self.isbn!r} stock={self.stock} precio={self.precio}>"
+        try:
+            id_ = object.__getattribute__(self, "id")
+            titulo = object.__getattribute__(self, "titulo")
+            autor = object.__getattribute__(self, "autor")
+            isbn = object.__getattribute__(self, "isbn")
+            stock = object.__getattribute__(self, "stock")
+            precio = object.__getattribute__(self, "precio")
+        except Exception:
+            return f"<Libro at 0x{id(self):x}>"
+        return (
+            f"<Libro id={id_} titulo={titulo!r} autor={autor!r} "
+            f"isbn={isbn!r} stock={stock} precio={precio}>"
+        )

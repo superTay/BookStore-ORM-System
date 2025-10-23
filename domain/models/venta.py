@@ -16,6 +16,7 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+from domain.models.usuario import Usuario  # noqa: F401  # ensure class is registered
 
 from config.database import Base
 

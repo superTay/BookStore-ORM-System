@@ -64,7 +64,11 @@ class RepositorioLibros:
     def listar_libros(self) -> Iterable[Libro]:
         """Return an iterable of all Libro records ordered by id."""
         with session_scope() as session:
-            return list(session.query(Libro).order_by(Libro.id.asc()).all())
+            rows = session.query(Libro).order_by(Libro.id.asc()).all()
+            # Eagerly load scalar attributes to avoid DetachedInstanceError after session closes
+            for r in rows:
+                _ = (r.id, r.titulo, r.autor, r.isbn, r.stock, r.precio)
+            return list(rows)
 
     def actualizar_stock_libro(self, libro_id: int, nuevo_stock: int) -> Optional[Libro]:
         """Update the stock of a Libro by id; returns the updated entity or None.

@@ -34,6 +34,10 @@ def cmd_test_db(_: argparse.Namespace) -> None:
 
 def cmd_cli(args: argparse.Namespace) -> None:
     # Forward to the existing CLI implementation
+    # Ensure all models are registered before invoking CLI commands
+    from domain.models import libro as _libro  # noqa: F401
+    from domain.models import venta as _venta  # noqa: F401
+    from domain.models import usuario as _usuario  # noqa: F401
     from app.cli.main import main as cli_main
 
     # Rebuild argv as if calling `python -m app.cli.main ...`
@@ -58,4 +62,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-
