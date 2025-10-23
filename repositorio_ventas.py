@@ -25,6 +25,7 @@ class RepositorioVentas:
         self,
         cliente_nombre: Optional[str],
         items: Sequence[tuple[int, int]],
+        usuario_id: Optional[int] = None,
     ) -> Venta:
         """Create a Venta with its DetalleVenta rows in a single transaction.
 
@@ -40,6 +41,14 @@ class RepositorioVentas:
         session = self._session()
         try:
             venta = Venta(cliente_nombre=cliente_nombre)
+            # Link to a user if provided
+            if usuario_id is not None:
+                # ensure user exists
+                from usuario import Usuario  # local import to avoid cycles
+                usuario = session.get(Usuario, usuario_id)
+                if not usuario:
+                    raise ValueError(f"Usuario with id={usuario_id} not found")
+                venta.usuario_id = usuario_id
             session.add(venta)
             total = 0.0
 
