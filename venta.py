@@ -33,6 +33,7 @@ class Venta(Base):
     __tablename__ = "ventas"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    usuario_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("usuarios.id"), nullable=True)
     cliente_nombre: Mapped[str] = mapped_column(String(100), nullable=True)
     fecha_venta: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     total_venta: Mapped[float] = mapped_column(Float, nullable=True)
@@ -42,6 +43,7 @@ class Venta(Base):
         back_populates="venta",
         cascade="all, delete-orphan",
     )
+    usuario = relationship("Usuario", back_populates="ventas")
 
     def __repr__(self) -> str:
         return f"<Venta id={self.id} cliente={self.cliente_nombre!r} fecha={self.fecha_venta} total={self.total_venta}>"
@@ -67,4 +69,3 @@ class DetalleVenta(Base):
 
     def __repr__(self) -> str:
         return f"<DetalleVenta id={self.id} venta_id={self.venta_id} libro_id={self.libro_id} cantidad={self.cantidad}>"
-
