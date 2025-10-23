@@ -51,6 +51,14 @@ class RepositorioVentas:
                 if not libro:
                     raise ValueError(f"Libro with id={libro_id} not found")
 
+                # Validate stock and decrement atomically within the transaction
+                current_stock = int(libro.stock or 0)
+                if current_stock < cantidad:
+                    raise ValueError(
+                        f"Insufficient stock for libro_id={libro_id}: have {current_stock}, need {cantidad}"
+                    )
+                libro.stock = current_stock - cantidad
+
                 precio = float(libro.precio or 0.0)
                 total += precio * cantidad
 
@@ -94,3 +102,60 @@ class RepositorioVentas:
         finally:
             session.close()
 
+    def actualizar_pedido(self, venta_id: int, items: Sequence[tuple[int, int]]) -> Optional[Venta]:
+        """Replace a sale's items atomically, with stock reconciliation.
+
+        Steps
+        - Load current Venta and its details.
+        - Restore stock from current details.
+        - Validate and apply new items (decrement stock).
+        - Recompute total_venta and persist.
+        """
+        session = self._session()
+        try:
+            venta = session.get(Venta, venta_id)
+            if not venta:
+                return None
+
+            # Restore stock from existing details
+            for d in list(venta.detalles):
+                libro = session.get(Libro, d.libro_id)
+                if libro:
+                    libro.stock = int(libro.stock or 0) + int(d.cantidad or 0)
+            # Clear existing details (delete-orphan via relationship)
+            venta.detalles.clear()
+            session.flush()
+
+            # Aggregate duplicate items (libro_id) in the new payload
+            aggregated = {}
+            for libro_id, cantidad in items:
+                if cantidad is None or cantidad <= 0:
+                    raise ValueError(f"Invalid quantity for libro_id={libro_id}: {cantidad}")
+                aggregated[libro_id] = aggregated.get(libro_id, 0) + int(cantidad)
+
+            total = 0.0
+            for libro_id, cantidad in aggregated.items():
+                libro = session.get(Libro, libro_id)
+                if not libro:
+                    raise ValueError(f"Libro with id={libro_id} not found")
+                current_stock = int(libro.stock or 0)
+                if current_stock < cantidad:
+                    raise ValueError(
+                        f"Insufficient stock for libro_id={libro_id}: have {current_stock}, need {cantidad}"
+                    )
+                libro.stock = current_stock - cantidad
+                precio = float(libro.precio or 0.0)
+                total += precio * cantidad
+
+                detalle = DetalleVenta(venta=venta, libro_id=libro_id, cantidad=cantidad)
+                session.add(detalle)
+
+            venta.total_venta = total
+            session.commit()
+            session.refresh(venta)
+            return venta
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
