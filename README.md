@@ -77,17 +77,23 @@ Repositories encapsulate session lifecycle, transactions (commit/rollback), and 
 
 CLI Usage
 Ensure dependencies are installed and .env is set, then:
-- Create tables: `python app/scripts/init_db.py`
-- Check DB connectivity: `python app/scripts/test_db.py`
-- Seed example books: `python app/cli/main.py seed-libros`
-- List books: `python app/cli/main.py listar-libros`
-- Create a sale: `python app/cli/main.py crear-venta "Cliente Demo" 1:2 2:1`
-- List sales: `python app/cli/main.py listar-ventas`
-- Bulk update prices:
-  - `python app/cli/main.py actualizar-precios --autor "George Orwell" --factor 1.1`
-  - `python app/cli/main.py actualizar-precios --ids 1,2 --precio 9.99`
-- Update an order (replace items):
-  - `python app/cli/main.py actualizar-pedido 1 1:3 2:1`
+- Preferred (via project runner):
+  - Create tables: `python manage.py init-db`
+  - Check DB connectivity: `python manage.py test-db`
+  - Seed example books: `python manage.py cli seed-libros`
+  - List books: `python manage.py cli listar-libros`
+  - Create a sale: `python manage.py cli crear-venta "Cliente Demo" 1:2 2:1`
+  - List sales: `python manage.py cli listar-ventas`
+  - Bulk update prices:
+    - `python manage.py cli actualizar-precios --autor "George Orwell" --factor 1.1`
+    - `python manage.py cli actualizar-precios --ids 1,2 --precio 9.99`
+  - Update an order (replace items):
+    - `python manage.py cli actualizar-pedido 1 1:3 2:1`
+
+Direct module execution (alternative):
+- Create tables: `python -m app.scripts.init_db`
+- Check DB connectivity: `python -m app.scripts.test_db`
+- Run CLI: `python -m app.cli.main listar-libros`
 
 Development Notes
 - Keep secrets in .env; .env is ignored by Git.
@@ -102,4 +108,3 @@ Requirements
 
 License
 This repository is provided without a license header. Add your preferred license if you plan to distribute it.
-
