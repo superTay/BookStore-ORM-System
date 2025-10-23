@@ -9,6 +9,10 @@ Commands
     listar-libros            Print all books.
     crear-venta NAME ITEMS   Create a sale with items as pairs libro_id:cantidad.
     listar-ventas            Print all sales.
+    actualizar-precios [--autor NAME] [--ids 1,2] [--min 0] [--max 100] [--precio 9.99 | --factor 1.1]
+                             Bulk update book prices by filters.
+    actualizar-pedido VENTA_ID ITEMS
+                             Replace sale items (libro_id:cantidad ...) with stock reconciliation.
 """
 
 import sys
@@ -17,7 +21,7 @@ from typing import List, Tuple
 from database import Base, engine
 import libro  # ensure models are registered
 import venta  # ensure models are registered
-from repositorio import RepositorioLibros
+from repositorio_libros import RepositorioLibros
 from repositorio_ventas import RepositorioVentas
 
 
@@ -74,6 +78,49 @@ def cmd_listar_ventas():
         print(v)
 
 
+def cmd_actualizar_precios(args: List[str]):
+    # naive arg parsing to avoid adding extra deps
+    autor = None
+    ids = None
+    min_p = None
+    max_p = None
+    precio = None
+    factor = None
+    it = iter(args)
+    for a in it:
+        if a == "--autor":
+            autor = next(it, None)
+        elif a == "--ids":
+            raw = next(it, "")
+            ids = [int(x) for x in raw.split(",") if x]
+        elif a == "--min":
+            min_p = float(next(it, "0"))
+        elif a == "--max":
+            max_p = float(next(it, "0"))
+        elif a == "--precio":
+            precio = float(next(it, "0"))
+        elif a == "--factor":
+            factor = float(next(it, "0"))
+        else:
+            raise SystemExit(f"Unknown flag: {a}")
+    repo = RepositorioLibros()
+    changed = repo.actualizar_precios(
+        autor=autor, ids=ids, min_precio=min_p, max_precio=max_p, nuevo_precio=precio, factor=factor
+    )
+    print(f"Updated {changed} book(s).")
+
+
+def cmd_actualizar_pedido(venta_id_str: str, item_args: List[str]):
+    venta_id = int(venta_id_str)
+    items = parse_items(item_args)
+    repo = RepositorioVentas()
+    venta = repo.actualizar_pedido(venta_id, items)
+    if not venta:
+        print("Sale not found")
+    else:
+        print("Sale updated:", venta)
+
+
 def main():
     ensure_tables()
     if len(sys.argv) < 2:
@@ -91,6 +138,14 @@ def main():
         cmd_crear_venta(nombre, sys.argv[3:])
     elif cmd == "listar-ventas":
         cmd_listar_ventas()
+    elif cmd == "actualizar-precios":
+        if len(sys.argv) < 3:
+            raise SystemExit("Usage: python main.py actualizar-precios [--autor NAME] [--ids 1,2] [--min 0] [--max 100] [--precio 9.99 | --factor 1.1]")
+        cmd_actualizar_precios(sys.argv[2:])
+    elif cmd == "actualizar-pedido":
+        if len(sys.argv) < 4:
+            raise SystemExit("Usage: python main.py actualizar-pedido VENTA_ID libro_id:cantidad [libro_id:cantidad ...]")
+        cmd_actualizar_pedido(sys.argv[2], sys.argv[3:])
     else:
         print("Unknown command.")
         print(__doc__)
@@ -98,4 +153,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
