@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/pyright/main/packages/vscode-pyright/schemas/pyrightconfig.schema.json",
+  "venvPath": "/Users/christianmarzaldellarovere/miniconda3/envs",
+  "venv": "libreria_online",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true,
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv",
+    "**/env",
+    "**/venv"
+  ]
+}
+
