@@ -14,6 +14,8 @@ Commands
     actualizar-pedido VENTA_ID ITEMS
                              Replace sale items (libro_id:cantidad ...) with stock reconciliation.
     generar-factura VENTA_ID  Print an invoice for the given sale id.
+    reporte --periodo P --archivo FILE
+                             Generate aggregated billing PDF (periodo: mensual|trimestral|anual).
 """
 
 import sys
@@ -26,6 +28,7 @@ from domain.models import usuario  # ensure models are registered
 from domain.repositories.libros import RepositorioLibros
 from domain.repositories.ventas import RepositorioVentas
 from domain.services.facturacion import generar_factura
+from domain.services.reports import generar_reporte
 
 
 def ensure_tables():
@@ -166,6 +169,21 @@ def main():
         if len(sys.argv) != 3:
             raise SystemExit("Usage: python main.py generar-factura VENTA_ID")
         cmd_generar_factura(sys.argv[2])
+    elif cmd == "reporte":
+        # naive flag parsing: expect --periodo X --archivo Y (order-insensitive)
+        periodo = None
+        archivo = None
+        it = iter(sys.argv[2:])
+        for a in it:
+            if a == "--periodo":
+                periodo = next(it, None)
+            elif a == "--archivo":
+                archivo = next(it, None)
+            else:
+                raise SystemExit("Usage: python main.py reporte --periodo mensual|trimestral|anual --archivo output.pdf")
+        if not periodo or not archivo:
+            raise SystemExit("Usage: python main.py reporte --periodo mensual|trimestral|anual --archivo output.pdf")
+        generar_reporte(archivo, periodo)
     else:
         print("Unknown command.")
         print(__doc__)
