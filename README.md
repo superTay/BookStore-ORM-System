@@ -106,5 +106,17 @@ Requirements
 - MySQL server accessible via the configured host/port
 - Packages: SQLAlchemy, PyMySQL, python-dotenv (see requirements.txt)
 
+Local UI (Streamlit)
+- Install Streamlit in your environment:
+  - `python -m pip install streamlit`
+- Run the local admin UI:
+  - `streamlit run app/ui/streamlit_app.py`
+- Features available:
+  - Books: create, list, update stock
+  - Users: create, list
+  - Sales: create sale with optional user link, list, update items
+  - Invoices: view generated invoice text per sale
+  - Reports: generate and download PDF billing reports (monthly/quarterly/annual)
+
 License
 This repository is provided without a license header. Add your preferred license if you plan to distribute it.
