@@ -13,6 +13,7 @@ Commands
                              Bulk update book prices by filters.
     actualizar-pedido VENTA_ID ITEMS
                              Replace sale items (libro_id:cantidad ...) with stock reconciliation.
+    generar-factura VENTA_ID  Print an invoice for the given sale id.
 """
 
 import sys
@@ -24,6 +25,7 @@ from domain.models import venta  # ensure models are registered
 from domain.models import usuario  # ensure models are registered
 from domain.repositories.libros import RepositorioLibros
 from domain.repositories.ventas import RepositorioVentas
+from domain.services.facturacion import generar_factura
 
 
 def ensure_tables():
@@ -125,6 +127,16 @@ def cmd_actualizar_pedido(venta_id_str: str, item_args: List[str]):
         print("Sale updated:", venta)
 
 
+def cmd_generar_factura(venta_id_str: str):
+    venta_id = int(venta_id_str)
+    repo = RepositorioVentas()
+    venta = repo.obtener_venta_por_id(venta_id)
+    if not venta:
+        print("Sale not found")
+        return
+    print(generar_factura(venta))
+
+
 def main():
     ensure_tables()
     if len(sys.argv) < 2:
@@ -150,6 +162,10 @@ def main():
         if len(sys.argv) < 4:
             raise SystemExit("Usage: python main.py actualizar-pedido VENTA_ID libro_id:cantidad [libro_id:cantidad ...]")
         cmd_actualizar_pedido(sys.argv[2], sys.argv[3:])
+    elif cmd == "generar-factura":
+        if len(sys.argv) != 3:
+            raise SystemExit("Usage: python main.py generar-factura VENTA_ID")
+        cmd_generar_factura(sys.argv[2])
     else:
         print("Unknown command.")
         print(__doc__)
