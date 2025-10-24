@@ -1,9 +1,10 @@
-![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
-![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-orange.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+![BookStore](https://img.shields.io/badge/📚_BookStore-ORM_System-0078D4?style=for-the-badge&logoColor=white)
 
 
-# BookStore ORM System
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-UI-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 
 
 BookStore ORM System
@@ -50,10 +51,12 @@ Domain Models
   - Columns: id (PK), titulo (str, required), autor (str, required), isbn (str, unique), stock (int), precio (float)
   - Prints a short message on instance creation (useful for demos/seeding)
   - __repr__ provides a concise developer-friendly representation
+    
 - Venta and DetalleVenta (domain/models/venta.py)
   - Venta: id (PK), usuario_id (FK to usuarios), cliente_nombre, fecha_venta (UTC now), total_venta (float)
   - DetalleVenta: id (PK), venta_id (FK to ventas, cascade delete), libro_id (FK to libros, restrict), cantidad (int)
   - Relationships: Venta.detalles, DetalleVenta.venta, DetalleVenta.libro
+    
 - Usuario (domain/models/usuario.py)
   - Columns: id (PK), nombre, email
   - Relationship: Usuario.ventas (one-to-many to Venta), Venta.usuario (back-populated)
@@ -68,6 +71,7 @@ Repositories encapsulate session lifecycle, transactions (commit/rollback), and 
   - obtener_libro_por_id(libro_id) -> Optional[Libro]
   - eliminar_libro(libro_id) -> bool
   - actualizar_precios(autor=None, ids=None, min_precio=None, max_precio=None, nuevo_precio=None, factor=None) -> int
+    
 - RepositorioVentas (domain/repositories/ventas.py)
   - crear_venta(cliente_nombre, items, usuario_id=None) -> Venta
     - items: sequence of (libro_id, cantidad)
@@ -77,6 +81,7 @@ Repositories encapsulate session lifecycle, transactions (commit/rollback), and 
   - obtener_venta_por_id(venta_id) -> Optional[Venta]
   - listar_ventas() -> list[Venta]
   - eliminar_venta(venta_id) -> bool
+ 
 - RepositorioUsuarios (domain/repositories/usuarios.py)
   - agregar_usuario(nombre, email) -> Usuario
   - listar_usuarios() -> list[Usuario]
@@ -119,6 +124,7 @@ Local UI (Streamlit)
   - `python -m pip install streamlit`
 - Run the local admin UI:
   - `streamlit run app/ui/streamlit_app.py`
+    
 - Features available:
   - Books: create, list, update stock
   - Users: create, list
@@ -127,4 +133,5 @@ Local UI (Streamlit)
   - Reports: generate and download PDF billing reports (monthly/quarterly/annual)
 
 License
+
 This repository is provided without a license header. Add your preferred license if you plan to distribute it.
