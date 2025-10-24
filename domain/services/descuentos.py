@@ -1,4 +1,4 @@
-"""Discount utilities.
+"""Domain pricing services: discounts.
 
 Provides a simple helper to apply percentage-based discounts to prices with
 input validation and predictable rounding behavior.
@@ -24,8 +24,7 @@ def aplicar_descuento(precio_original: Number, porcentaje_descuento: Number) -> 
     Notes
     - This function does not clamp the result; callers may add their own
       business rules (e.g., minimum price of 0.0).
-    - Floating point arithmetic is used; for currency-sensitive contexts,
-      prefer Decimal with appropriate context/quantize.
+    - For currency-sensitive contexts, prefer Decimal with appropriate quantize.
     """
     if precio_original < 0:
         raise ValueError("precio_original must be non-negative")
