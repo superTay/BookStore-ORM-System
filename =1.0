@@ -1,0 +1,4 @@
+Requirement already satisfied: SQLAlchemy in /Users/christianmarzaldellarovere/miniconda3/envs/libreria_online/lib/python3.11/site-packages (2.0.44)
+Requirement already satisfied: PyMySQL in /Users/christianmarzaldellarovere/miniconda3/envs/libreria_online/lib/python3.11/site-packages (1.1.2)
+Requirement already satisfied: python-dotenv in /Users/christianmarzaldellarovere/miniconda3/envs/libreria_online/lib/python3.11/site-packages (1.1.1)
+Requirement already satisfied: typing-extensions>=4.6.0 in /Users/christianmarzaldellarovere/miniconda3/envs/libreria_online/lib/python3.11/site-packages (from SQLAlchemy) (4.15.0)

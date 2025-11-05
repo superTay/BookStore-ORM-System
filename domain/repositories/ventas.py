@@ -84,10 +84,21 @@ class RepositorioVentas:
         finally:
             session.close()
 
+        
+    from sqlalchemy.orm import joinedload
+
     def obtener_venta_por_id(self, venta_id: int) -> Optional[Venta]:
-        """Return a Venta by id, or None if not found."""
-        with SessionLocal() as session:
-            return session.get(Venta, venta_id)
+        with self.session_scope() as session:
+            stmt = (
+                select(Venta)
+                .options(
+                    joinedload(Venta.detalles).joinedload(DetalleVenta.libro)  # carga detalles y libros
+                )
+                .where(Venta.id == venta_id)
+            )
+            result = session.execute(stmt).scalars().first()
+            return result
+
 
     def listar_ventas(self) -> Iterable[Venta]:
         """List all ventas ordered by most recent first."""
