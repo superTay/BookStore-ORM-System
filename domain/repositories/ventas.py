@@ -44,7 +44,7 @@ class RepositorioVentas:
             # Link to a user if provided
             if usuario_id is not None:
                 # ensure user exists
-                from usuario import Usuario  # local import to avoid cycles
+                from domain.models.usuario import Usuario  # local import to avoid cycles
                 usuario = session.get(Usuario, usuario_id)
                 if not usuario:
                     raise ValueError(f"Usuario with id={usuario_id} not found")
